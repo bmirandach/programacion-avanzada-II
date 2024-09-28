@@ -1,6 +1,8 @@
 package com.programacionavanzadaii.trabajoPractico1.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap; // para probar con Bruno
+import java.util.Map; // las cosultas de verCarrito
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,30 +27,38 @@ public class CarritoController {
 
   // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html
 
+  //para probar la consulta de productos de un carrito en verCarrito ------
+  private Map<String, CarritoDTO> carritos = new HashMap<>();
+
   //se agrega el producto en el carrito especificado
   @PostMapping("/agregarProducto/{idCarrito}")
   public ResponseEntity<String> agregarProducto(@PathVariable String idCarrito, @RequestBody ProductoDTO producto) {
-    //TODO: pasr el idCarrito!! dentro del producto?  en el path??
-      CarritoDTO carrito = new CarritoDTO();
+      //CarritoDTO carrito = new CarritoDTO();
+      CarritoDTO carrito = carritos.getOrDefault(idCarrito, new CarritoDTO()); // getOrDefault para que si no existe lo cree
       carrito.setIdCarrito(idCarrito);
-      carrito.setProductos(new ArrayList<>());
+      //solo si no hay productos crea una nueva lista
+      if (carrito.getProductos() == null) {
+        carrito.setProductos(new ArrayList<>());
+      }
       carrito.getProductos().add(producto);
+      //guardo el carrito en la lista de carritos
+      carritos.put(idCarrito, carrito);
       //mensaje
-      System.out.println("Producto agregado: " + producto.getNombre() + " Cantidad: " + producto.getCantidad());
+      System.out.println("Producto agregado: " + producto.getNombre() + " - Cantidad: " + producto.getCantidad());
       return ResponseEntity.ok("Producto agregado al carrito " + idCarrito);
   }
 
   //se ve contenido del carrito especificado
   @GetMapping("/{idCarrito}")
   public ResponseEntity<CarritoDTO> verCarrito(@PathVariable String idCarrito) {
-    // y aca buscaria el carrito si estuviera almacenado en algun lugar
-
-    //TODO: comentar, es para ver si funciona
-    CarritoDTO carrito = new CarritoDTO();
-    carrito.setIdCarrito(idCarrito);
-    carrito.setProductos(new ArrayList<>()); 
-
-    // y se ve un carrito vacio
+    // para probar
+    CarritoDTO carrito = carritos.get(idCarrito);
+    // CarritoDTO carrito = new CarritoDTO();
+    // carrito.setIdCarrito(idCarrito);
+    // carrito.setProductos(new ArrayList<>()); 
+    if (carrito == null) {
+      return ResponseEntity.notFound().build(); // ResponseEntity.noContent().build();
+    }
     return ResponseEntity.ok(carrito);
   }
 
@@ -62,12 +72,12 @@ public class CarritoController {
     System.out.println("Estado inicial del mensaje: " + carritoMensaje.getEstado());
     // aca se recibe al carrito porque ya paso por el pago y demas
     carritoMensaje.adquirir();
-    System.out.println("Carrito adquirido. Estado: " + carritoMensaje.getEstado());
+    System.out.println("Carrito adquirido. Estado del mensaje: " + carritoMensaje.getEstado());
     //se crea el pedido
     carritoMensaje.procesarMensaje();
     //y se archiva el mensaje
     carritoMensaje.archivar();
-    System.out.println("Carrito archivado. Estado: " + carritoMensaje.getEstado());
+    System.out.println("Carrito archivado. Estado del mensaje: " + carritoMensaje.getEstado());
 
     return ResponseEntity.ok("Pedido creado para el carrito de ID " + idCarrito + " y con estado actualizado a " + carritoMensaje.getEstado());
   }
