@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.programacionavanzadaii.trabajoPractico1.model.CarritoDTO;
+import com.programacionavanzadaii.trabajoPractico1.model.Client;
 import com.programacionavanzadaii.trabajoPractico1.model.ClienteMensaje;
 import com.programacionavanzadaii.trabajoPractico1.model.Exchange;
 import com.programacionavanzadaii.trabajoPractico1.model.ProductoDTO;
@@ -27,22 +28,23 @@ public class CarritoController {
 
   private Map<String, CarritoDTO> carritos = new HashMap<>(); // para probar la consulta de productos de un carrito en verCarrito
   private Exchange exchange = new Exchange(); // para manejar los mensajes
+  private Client consumidor = new Client(exchange); // en este caso el consumidor va a ser un cliente no un vendedor
 
   //se agrega el producto en el carrito especificado
   @PostMapping("/agregarProducto/{idCarrito}")
   public ResponseEntity<String> agregarProducto(@PathVariable String idCarrito, @RequestBody ProductoDTO producto) {
-      CarritoDTO carrito = carritos.getOrDefault(idCarrito, new CarritoDTO()); // getOrDefault para que si no existe lo cree
-      carrito.setIdCarrito(idCarrito);
-      //solo si no hay productos crea una nueva lista
-      if (carrito.getProductos() == null) {
-        carrito.setProductos(new ArrayList<>());
-      }
-      carrito.getProductos().add(producto);
-      carritos.put(idCarrito, carrito); // guardo el carrito en la lista de carritos
-      String mensaje = "Se agregó " + producto.getNombre() + " x " + producto.getCantidad() + " unidad(es)";
-      //encola mensaje para clientes
-      exchange.encolarMensaje("mensajesClientes", new ClienteMensaje(mensaje, idCarrito));
-      return ResponseEntity.ok("Producto agregado al carrito " + idCarrito);
+    CarritoDTO carrito = carritos.getOrDefault(idCarrito, new CarritoDTO()); // getOrDefault para que si no existe lo cree
+    carrito.setIdCarrito(idCarrito);
+    //solo si no hay productos crea una nueva lista
+    if (carrito.getProductos() == null) {
+      carrito.setProductos(new ArrayList<>());
+    }
+    carrito.getProductos().add(producto);
+    carritos.put(idCarrito, carrito); // guardo el carrito en la lista de carritos
+    String mensaje = "Se agregó " + producto.getNombre() + " x " + producto.getCantidad() + " unidad(es)";
+    //encola mensaje para clientes
+    exchange.encolarMensaje("mensajesClientes", new ClienteMensaje(mensaje, idCarrito));
+    return ResponseEntity.ok("Producto agregado al carrito " + idCarrito);
   }
 
   //se ve contenido del carrito especificado
@@ -66,17 +68,16 @@ public class CarritoController {
     }
     List<ProductoDTO> productos = carrito.getProductos();
     for (ProductoDTO producto : productos) {
-        if (producto.getIdProducto().equals(productoEditado.getIdProducto())) {
-          producto.setCantidad(productoEditado.getCantidad());
-          // encola mensaje para clientes
-          exchange.encolarMensaje("mensajesClientes", new ClienteMensaje("Producto actualizado con éxito", idCarrito));
-
-          return ResponseEntity.ok("Producto actualizado en el carrito " + idCarrito);
-        }
+      if (producto.getIdProducto().equals(productoEditado.getIdProducto())) {
+        producto.setCantidad(productoEditado.getCantidad());
+        // encola mensaje para clientes
+        exchange.encolarMensaje("mensajesClientes", new ClienteMensaje("Producto actualizado con éxito", idCarrito));
+        return ResponseEntity.ok("Producto actualizado en el carrito " + idCarrito);
+      }
     }
     // llega aca si no lo encontro
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Producto no encontrado en el carrito " + idCarrito);
-}
+  }
 
   //se crea un pedido que ya se pago, aca se manejan los mensajes para ambos consumidores (clientes y vendedores)
   @PostMapping("/crearPedido/{idCarrito}")
@@ -92,4 +93,10 @@ public class CarritoController {
     return ResponseEntity.ok("Pedido creado para el carrito de ID " + idCarrito);
   }
 
+  // el consumidor cliente procesa los mensajes
+  @PostMapping("/procesarMensajesClientes")
+  public ResponseEntity<String> procesarMensajesClientes() {
+    consumidor.consumirMensajes("mensajesClientes");
+    return ResponseEntity.ok("Mensajes procesados en la cola de clientes");
+  }
 }

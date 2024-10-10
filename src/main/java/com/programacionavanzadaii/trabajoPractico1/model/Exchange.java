@@ -25,19 +25,9 @@ public class Exchange {
     }
   }
 
-  public MensajeDTO desencolarMensaje(String nombreCola) {
-    LinkedList<MensajeDTO> cola = colasMensajes.get(nombreCola);
-    if (cola != null) {
-      MensajeDTO mensaje = cola.poll(); // uso poll porque removeFirst devuelve NoSuchElementException si esta vacia
-      if (mensaje != null) {
-        System.out.println("Desencolando el mensaje de ID " + mensaje.getMessageId() + " de la cola " + nombreCola);
-      } else {
-        System.out.println("No hay mensajes en la cola " + nombreCola);
-      }
-      return mensaje;
-    } else {
-      System.out.println("ERROR! La cola " + nombreCola + " no existe");
-      return null;
-    }
+  // el getter pero de una cola especifica para que lo use el consumidor
+  public LinkedList<MensajeDTO> obtenerCola(String nombreCola) {
+    return colasMensajes.get(nombreCola);
   }
+
 }
