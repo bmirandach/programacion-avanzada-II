@@ -12,7 +12,7 @@
 	<artifactId>trabajoPractico1</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>trabajoPractico1</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Trabajo Practico con Spring Boot</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -45,9 +45,54 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-core</artifactId>
+			<version>2.4-M4-groovy-4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.spockframework</groupId>
+			<artifactId>spock-spring</artifactId>
+			<version>2.4-M4-groovy-4.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.groovy</groupId>
+			<artifactId>groovy-all</artifactId>
+			<version>4.0.23</version>
+			<type>pom</type>
+		</dependency>
 	</dependencies>
 
 	<build>
+		<pluginManagement>
+			<plugins>
+					<plugin>
+							<groupId>org.codehaus.gmavenplus</groupId>
+							<artifactId>gmavenplus-plugin</artifactId>
+							<version>4.0.1</version>
+							<executions>
+									<execution>
+											<id>compile-app</id>
+											<goals>
+													<goal>compile</goal>
+											</goals>
+											<phase>compile</phase>
+									</execution>
+									<execution>
+											<id>compile-tests</id>
+											<goals>
+													<goal>compileTests</goal>
+											</goals>
+											<phase>test-compile</phase>
+									</execution>
+							</executions>
+					</plugin>
+			</plugins>
+		</pluginManagement>
+
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -60,6 +105,25 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.gmavenplus</groupId>
+				<artifactId>gmavenplus-plugin</artifactId>
+				<version>4.0.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.5.2</version>
+				<configuration>
+					<includes>
+						<include>**/*.groovy</include> <!-- lo que SEA -->
+						<include>**/*Specification.groovy</include>
+						<include>**/*Test.groovy</include>
+						<include>**/*Specification.class</include> <!-- y ADEMASSSSS -->
+					</includes>
+					<testSourceDirectory>src/test/groovy</testSourceDirectory>
+        </configuration>
 			</plugin>
 		</plugins>
 	</build>
