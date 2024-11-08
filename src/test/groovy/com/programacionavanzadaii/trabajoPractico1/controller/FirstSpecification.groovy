@@ -1,4 +1,3 @@
-// https://www.baeldung.com/groovy-spock
 import spock.lang.Specification
 
 class FirstSpecification extends Specification {

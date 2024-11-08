@@ -49,3 +49,8 @@ GET http://localhost:8080/apicarrito/123
 POST http://localhost:8080/apicarrito/crearPedido/123
 
 
+***
+
+Sobre el TP-3
+
+Como ya venía trabajando con Maven las dependencias necesarias se agregaron al proyecto como se indica en la página de [Maven Repository](https://mvnrepository.com/) y siempre tratando de que sea la última versión. Estas fueron spock-core (v. 2.4-M4-groovy-4.0) y groovy-all (v. 4.0.23). Como plugins para poder integrar Groovy al proyecto se usaron gmavenplus-plugin (v. 4.0.1) y maven-surefire-plugin (v. 3.5.2). Dentro de build-pluginManagement en el archivo POM se incluyó también gmavenplus-plugin para que efectivamente se puedan ejecutar los tests.
