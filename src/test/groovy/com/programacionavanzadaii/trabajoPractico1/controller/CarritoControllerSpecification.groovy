@@ -9,11 +9,6 @@ import org.springframework.http.HttpStatus
 
 class CarritoControllerSpecification extends Specification {
 
-    // def setup() {
-    //     //before
-    //     def carritoController = new CarritoController()
-    // }
-
     def "agregar un producto al carrito"() {
         given: "un carrito vacio y un producto"
         def carritoController = new CarritoController()
@@ -65,10 +60,6 @@ class CarritoControllerSpecification extends Specification {
         def carrito = carritoController.carritos.get("123")
         // como las arrow functions             closure
         carrito.getProductos().find { productoBuscado -> productoBuscado.idProducto == "AZCR0343" }.cantidad == 5
-        //validar que no sea null si no encuentra el producto?
-        // def productoExistente = carrito.getProductos().find { productoBuscado -> productoBuscado.idProducto == "prod1" }
-        // assert productoExistente != null : "El producto con idProducto 'prod1' no se encontró en el carrito"
-        // assert productoExistente.cantidad == 5
     }
 
     def "devolver Not Found cuando se busca actualizar un producto que no existe"() {
@@ -132,6 +123,3 @@ class CarritoControllerSpecification extends Specification {
 
 
 }
-//https://spockframework.org/spock/docs/2.3/spock_primer.html
-//https://www.tutorialspint.com/groovy/groovy_find.htm
-//nota-2: que los unit test sean lo mas segmentados posibles
