@@ -54,3 +54,14 @@ POST http://localhost:8080/apicarrito/crearPedido/123
 Sobre el TP-3
 
 Como ya venía trabajando con Maven las dependencias necesarias se agregaron al proyecto como se indica en la página de [Maven Repository](https://mvnrepository.com/) y siempre tratando de que sea la última versión. Estas fueron spock-core (v. 2.4-M4-groovy-4.0) y groovy-all (v. 4.0.23). Como plugins para poder integrar Groovy al proyecto se usaron gmavenplus-plugin (v. 4.0.1) y maven-surefire-plugin (v. 3.5.2). Dentro de build-pluginManagement en el archivo POM se incluyó también gmavenplus-plugin para que efectivamente se puedan ejecutar los tests.
+
+
+***
+
+Sobre el TP-4
+
+Ahora que se agrega una base de datos existen dos tipos de Carritos: los que están en memoria (en el Map de CarritoController) que existen mientras la aplicación se está ejecutando y los que están en la base de datos (cuando se usa MyBatis) que persisten y no están relacionados con el Map. Las operaciones que se realizan sobre los carritos están separadas, unas se realizan con los endpoints y tiene los test para validar su correcto funcionamiento y las otras se realizan con MyBatis. 
+
+Se podrían unir estos carritos haciendo modificaciones en el CarritoController para que al agregarse un nuevo carrito en el HashMap carritos se agregue un registro a la base y así mismo si se agrega o modifica un producto que esto se vea reflejado en la base y que además al inicar la aplicación se cargue el carrito del CarritoController con los registros de la base de datos. Pero por motivos de prueba decidí que cada tipo de operación sea independiente de la otra. Esto significó agregar nuevas clases para trabajar con los carritos y los productos (están basadas en sus tablas son las que en el material para este TP se llamó clases POJO, los nombres son Carrito y Producto). Para mantener la claridad y la limpieza en el proyecto todas las operaciones relacionadas con la base de datos están en otro controlador llamado CarritoDBController (se separan las responsabilidades).
+
+Para poder trabajar con MyBatis en el proyecto se modificó el archivo POM, las nuevas dependencias son las de mybatis (v. 3.5.16) y el conector de mysql para java mysql-connector-j (v. 9.1.0). Los mappers con las consultas SQL están en la carpeta del mismo nombre dentro de resources. Hay un archivo para las operaciones en la tabla de los carritos y otro para la que relaciona los productos con los carritos. Y las interfaces que se usan en el controlador están también en una carpeta llamada mappers.

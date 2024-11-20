@@ -1,0 +1,21 @@
+<mapper namespace="com.programacionavanzadaii.trabajoPractico1.mappers.CarritoProductosMapper">
+
+  <insert id="agregarProductoEnCarrito" parameterType="map"> <!-- map porque es un objeto con los ids -->
+    INSERT INTO carritos_x_productos (idCarrito, idProducto)
+    VALUES (#{idCarrito}, #{idProducto});
+  </insert>
+
+  <select id="consultarProductosPorCarrito" parameterType="int" resultType="Producto">
+    SELECT p.idProducto, p.nombre, p.precio, cxp.cantidad
+    FROM carritos_x_productos cxp
+    JOIN productos p ON cxp.idProducto = p.idProducto
+    WHERE cxp.idCarrito = #{idCarrito}
+  </select>
+  
+  <delete id="eliminarProductoDelCarrito" parameterType="map">
+    DELETE FROM carritos_x_productos
+    WHERE idCarrito = #{idCarrito} AND idProducto = #{idProducto};
+  </delete>
+
+</mapper>
+<!-- uso resultMap? -->

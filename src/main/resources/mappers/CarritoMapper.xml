@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+                       "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.programacionavanzadaii.trabajoPractico1.mappers.CarritoMapper">
+
+  <insert id="crearCarrito" parameterType="Carrito" useGeneratedKeys="true" keyProperty="idCarrito">
+    INSERT INTO Carritos (fechaCreacion)
+    VALUES (#{fechaCreacion});
+  </insert>
+
+  <delete id="eliminarCarrito" parameterType="int">
+    DELETE FROM Carritos
+    WHERE idCarrito = #{idCarrito};
+  </delete>
+
+  <select id="consultarCarrito" parameterType="int" resultType="Carrito">
+    SELECT idCarrito, fechaCreacion
+    FROM Carritos
+    WHERE idCarrito = #{idCarrito};
+  </select>
+
+  <select id="consultarTodosLosCarritos" resultType="Carrito">
+    SELECT idCarrito, fechaCreacion
+    FROM Carritos;
+  </select>
+
+</mapper>
