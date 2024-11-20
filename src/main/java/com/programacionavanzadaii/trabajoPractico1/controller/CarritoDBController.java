@@ -1,7 +1,13 @@
 package com.programacionavanzadaii.trabajoPractico1.controller;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Date;
+
+import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,23 +25,34 @@ import com.programacionavanzadaii.trabajoPractico1.model.Carrito;
 @RequestMapping("/carrito-db")
 public class CarritoDBController {
 
-  private CarritoMapper carritoMapper;
+  // private CarritoMapper carritoMapper;
+  private SqlSessionFactory sqlSessionFactory;
+  private SqlSession session;
 
   @Autowired
   public CarritoDBController(CarritoMapper carritoMapper) {
-    this.carritoMapper = carritoMapper;
+    try {
+      // this.carritoMapper = carritoMapper;
+      Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
+      this.sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+      this.session = sqlSessionFactory.openSession();
+    } catch (IOException e) {
+      System.err.println("Error: " + e.getMessage());
+    }
+    
   }
   // public CarritoDBController(SqlSessionFactory sqlSessionFactory) {
   //   this.sqlSessionFactory = sqlSessionFactory;
   // }
+  
+  
 
   @PostMapping("/crearCarrito")
   public ResponseEntity<String> crearCarrito(@RequestBody Carrito carrito) {
     //try (SqlSession session = sqlSessionFactory.openSession()) {
       //CarritoMapper carritoMapper = session.getMapper(CarritoMapper.class);
-
-      carritoMapper.crearCarrito(carrito);
-
+      // carritoMapper.crearCarrito(carrito);
+      session.insert("CarritoMapper.crearCarrito", carrito);
       return ResponseEntity.ok("Carrito creado con ID " + carrito.getIdCarrito());
     // } catch (Exception e) {
     //   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR!! no se pudo crear el carrito " + e.getMessage());
@@ -46,8 +63,8 @@ public class CarritoDBController {
   @GetMapping("/carrito/{idCarrito}")
   public Carrito getCarritoById(@PathVariable int idCarrito) {
     //try (SqlSession session = sqlSessionFactory.openSession()) {
-
-      return carritoMapper.consultarCarrito(idCarrito);
+    CarritoMapper carritoMapper = session.getMapper(CarritoMapper.class);
+    return carritoMapper.consultarCarrito(idCarrito);
     //}
   }
   

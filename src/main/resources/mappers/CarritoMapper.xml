@@ -19,9 +19,14 @@
     WHERE idCarrito = #{idCarrito};
   </select>
 
-  <select id="consultarTodosLosCarritos" resultType="Carrito">
+  <select id="consultarTodosLosCarritos" resultType="result">
     SELECT idCarrito, fechaCreacion
     FROM Carritos;
   </select>
+
+  <resultMap id = "result" type = "Carrito">
+    <result property = "id" column = "idCarrito"/>
+    <result property = "fecha" column = "fechaCreacion"/>
+  </resultMap>
 
 </mapper>
