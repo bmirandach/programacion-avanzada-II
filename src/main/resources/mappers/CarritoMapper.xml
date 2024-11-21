@@ -19,14 +19,14 @@
     WHERE idCarrito = #{idCarrito};
   </select>
 
-  <select id="consultarTodosLosCarritos" resultType="result">
+  <select id="consultarTodosLosCarritos" resultMap="result">
     SELECT idCarrito, fechaCreacion
     FROM Carritos;
   </select>
 
   <resultMap id = "result" type = "Carrito">
-    <result property = "id" column = "idCarrito"/>
-    <result property = "fecha" column = "fechaCreacion"/>
+    <result property = "idCarrito" column = "idCarrito"/>
+    <result property = "fechaCreacion" column = "fechaCreacion"/>
   </resultMap>
 
 </mapper>

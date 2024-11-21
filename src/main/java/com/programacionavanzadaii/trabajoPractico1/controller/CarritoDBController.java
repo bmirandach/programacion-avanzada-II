@@ -1,10 +1,10 @@
 package com.programacionavanzadaii.trabajoPractico1.controller;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Date;
+// import java.io.IOException;
+// import java.io.Reader;
+// import java.util.Date;
 
-import org.apache.ibatis.io.Resources;
+// import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -26,21 +26,28 @@ import com.programacionavanzadaii.trabajoPractico1.model.Carrito;
 public class CarritoDBController {
 
   // private CarritoMapper carritoMapper;
-  private SqlSessionFactory sqlSessionFactory;
-  private SqlSession session;
+  // private SqlSessionFactory sqlSessionFactory;
+  // private SqlSession session;
 
-  @Autowired
-  public CarritoDBController(CarritoMapper carritoMapper) {
-    try {
-      // this.carritoMapper = carritoMapper;
-      Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
-      this.sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
-      this.session = sqlSessionFactory.openSession();
-    } catch (IOException e) {
-      System.err.println("Error: " + e.getMessage());
-    }
-    
-  }
+  //@Autowired
+  private CarritoMapper carritoMapper;
+
+  // @Autowired
+  private SqlSession sqlSession;
+  // public CarritoDBController() {
+  //   try {
+  //     // this.carritoMapper = carritoMapper;
+  //     Reader reader = Resources.getResourceAsReader("mybatis-config.xml");
+  //     this.sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
+  //     this.session = sqlSessionFactory.openSession();
+  //   } catch (IOException e) {
+  //     System.err.println("Error: " + e.getMessage());
+  //   }
+  //@Autowired
+  // public CarritoDBController(CarritoMapper carritoMapper) {
+  //   this.carritoMapper = carritoMapper;
+  // }
+  // }
   // public CarritoDBController(SqlSessionFactory sqlSessionFactory) {
   //   this.sqlSessionFactory = sqlSessionFactory;
   // }
@@ -49,23 +56,30 @@ public class CarritoDBController {
 
   @PostMapping("/crearCarrito")
   public ResponseEntity<String> crearCarrito(@RequestBody Carrito carrito) {
-    //try (SqlSession session = sqlSessionFactory.openSession()) {
-      //CarritoMapper carritoMapper = session.getMapper(CarritoMapper.class);
-      // carritoMapper.crearCarrito(carrito);
-      session.insert("CarritoMapper.crearCarrito", carrito);
+    try (SqlSession session = sqlSession) {
+      //carritoMapper = session.getMapper(CarritoMapper.class);
+      carritoMapper.crearCarrito(carrito);
+      session.commit();
       return ResponseEntity.ok("Carrito creado con ID " + carrito.getIdCarrito());
-    // } catch (Exception e) {
-    //   return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR!! no se pudo crear el carrito " + e.getMessage());
-    // }
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR!! no se pudo crear el carrito. " + e.getMessage());
+    }
   }
 
 
-  @GetMapping("/carrito/{idCarrito}")
-  public Carrito getCarritoById(@PathVariable int idCarrito) {
+  @GetMapping("/{idCarrito}")
+  public ResponseEntity<Carrito> consultarCarrito(@PathVariable int idCarrito) {
     //try (SqlSession session = sqlSessionFactory.openSession()) {
-    CarritoMapper carritoMapper = session.getMapper(CarritoMapper.class);
-    return carritoMapper.consultarCarrito(idCarrito);
-    //}
+    try (SqlSession session = sqlSession) {
+      CarritoMapper carritoMapper = session.getMapper(CarritoMapper.class); //probar
+      Carrito carrito = carritoMapper.consultarCarrito(idCarrito);
+      if (carrito == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+      } 
+      return ResponseEntity.ok(carrito);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
   }
   
 }

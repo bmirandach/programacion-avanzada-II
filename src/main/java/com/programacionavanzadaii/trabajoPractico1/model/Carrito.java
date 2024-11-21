@@ -7,10 +7,13 @@ public class Carrito {
   private int idCarrito; // de la base -> usar useGeneratedKeys y keyProperty!!!
   private Date fechaCreacion;
 
-  public Carrito(Date fechaCreacion) {
-    this.fechaCreacion = fechaCreacion;
-  }
+  // public Carrito(Date fechaCreacion) {
+  //   this.fechaCreacion = fechaCreacion;
+  // }
 
+  public Carrito() {
+  }
+  
   // defino los getters y setters
   public int getIdCarrito() {
     return idCarrito;
